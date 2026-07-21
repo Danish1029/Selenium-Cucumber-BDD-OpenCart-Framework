@@ -2,12 +2,12 @@
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
-  <groupId>opencart26</groupId>
-  <artifactId>opencart26</artifactId>
+  <groupId>Selenium-Cucumber-BDD-OpenCart-Framework</groupId>
+  <artifactId>Selenium-Cucumber-BDD-OpenCart-Framework</artifactId>
   <version>0.0.1-SNAPSHOT</version>
   <packaging>jar</packaging>
 
-  <name>opencart26</name>
+  <name>Selenium-Cucumber-BDD-OpenCart-Framework</name>
   <url>http://maven.apache.org</url>
 
   <properties>
