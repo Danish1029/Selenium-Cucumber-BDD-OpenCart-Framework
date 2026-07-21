@@ -1,163 +1,314 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <modelVersion>4.0.0</modelVersion>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+         http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
-  <groupId>Selenium-Cucumber-BDD-OpenCart-Framework</groupId>
-  <artifactId>Selenium-Cucumber-BDD-OpenCart-Framework</artifactId>
-  <version>0.0.1-SNAPSHOT</version>
-  <packaging>jar</packaging>
+    <modelVersion>4.0.0</modelVersion>
 
-  <name>Selenium-Cucumber-BDD-OpenCart-Framework</name>
-  <url>http://maven.apache.org</url>
+    <!-- ========================================================= -->
+    <!-- Project Information                                       -->
+    <!-- ========================================================= -->
 
-  <properties>
-    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-  </properties>
+    <groupId>Selenium-Cucumber-BDD-OpenCart-Framework</groupId>
+    <artifactId>Selenium-Cucumber-BDD-OpenCart-Framework</artifactId>
+    <version>0.0.1-SNAPSHOT</version>
+    <packaging>jar</packaging>
 
- <build>
-    <pluginManagement>
+    <name>Selenium-Cucumber-BDD-OpenCart-Framework</name>
+    <url>http://maven.apache.org</url>
+
+
+    <!-- ========================================================= -->
+    <!-- Project Properties                                        -->
+    <!-- ========================================================= -->
+
+    <properties>
+
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+
+        <!-- Java -->
+        <maven.compiler.source>11</maven.compiler.source>
+        <maven.compiler.target>11</maven.compiler.target>
+
+        <!-- Framework Versions -->
+        <selenium.version>4.44.0</selenium.version>
+        <testng.version>7.12.0</testng.version>
+
+        <!-- Cucumber -->
+        <cucumber.version>7.29.0</cucumber.version>
+
+        <!-- Reporting -->
+        <allure.version>2.29.1</allure.version>
+        <extent.version>5.1.2</extent.version>
+
+        <!-- AspectJ -->
+        <aspectj.version>1.9.24</aspectj.version>
+
+    </properties>
+
+
+    <!-- ========================================================= -->
+    <!-- Dependencies                                               -->
+    <!-- ========================================================= -->
+
+    <dependencies>
+
+
+        <!-- ===================================================== -->
+        <!-- Selenium                                              -->
+        <!-- ===================================================== -->
+
+        <dependency>
+            <groupId>org.seleniumhq.selenium</groupId>
+            <artifactId>selenium-java</artifactId>
+            <version>${selenium.version}</version>
+        </dependency>
+
+
+        <!-- ===================================================== -->
+        <!-- TestNG                                                -->
+        <!-- ===================================================== -->
+
+        <dependency>
+            <groupId>org.testng</groupId>
+            <artifactId>testng</artifactId>
+            <version>${testng.version}</version>
+            <scope>test</scope>
+        </dependency>
+
+
+        <!-- ===================================================== -->
+        <!-- Cucumber BDD                                          -->
+        <!-- ===================================================== -->
+
+        <!--
+            Provides:
+            @Given
+            @When
+            @Then
+            @And
+            @But
+
+            Also provides Cucumber Java step-definition support.
+        -->
+
+        <dependency>
+            <groupId>io.cucumber</groupId>
+            <artifactId>cucumber-java</artifactId>
+            <version>${cucumber.version}</version>
+            <scope>test</scope>
+        </dependency>
+
+
+        <!--
+            Integrates Cucumber with TestNG.
+
+            This allows us to use:
+            AbstractTestNGCucumberTests
+            @CucumberOptions
+            TestNG parallel execution
+        -->
+
+        <dependency>
+            <groupId>io.cucumber</groupId>
+            <artifactId>cucumber-testng</artifactId>
+            <version>${cucumber.version}</version>
+            <scope>test</scope>
+        </dependency>
+
+
+        <!-- ===================================================== -->
+        <!-- Apache POI - Excel/Data Driven Testing                 -->
+        <!-- ===================================================== -->
+
+        <dependency>
+            <groupId>org.apache.poi</groupId>
+            <artifactId>poi</artifactId>
+            <version>5.5.1</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.poi</groupId>
+            <artifactId>poi-ooxml</artifactId>
+            <version>5.5.1</version>
+        </dependency>
+
+
+        <!-- ===================================================== -->
+        <!-- Log4j2 Logging                                        -->
+        <!-- ===================================================== -->
+
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-api</artifactId>
+            <version>2.26.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-core</artifactId>
+            <version>2.26.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-slf4j2-impl</artifactId>
+            <version>2.26.0</version>
+        </dependency>
+
+
+        <!-- ===================================================== -->
+        <!-- Apache Commons                                        -->
+        <!-- ===================================================== -->
+
+        <dependency>
+            <groupId>commons-io</groupId>
+            <artifactId>commons-io</artifactId>
+            <version>2.22.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>commons-fileupload</groupId>
+            <artifactId>commons-fileupload</artifactId>
+            <version>1.6.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-lang3</artifactId>
+            <version>3.20.0</version>
+        </dependency>
+
+
+        <!-- ===================================================== -->
+        <!-- Email Utility                                         -->
+        <!-- ===================================================== -->
+
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-email</artifactId>
+            <version>1.6.0</version>
+        </dependency>
+
+
+        <!-- ===================================================== -->
+        <!-- Extent Reports                                        -->
+        <!-- ===================================================== -->
+
+        <dependency>
+            <groupId>com.aventstack</groupId>
+            <artifactId>extentreports</artifactId>
+            <version>${extent.version}</version>
+        </dependency>
+
+
+        <!-- ===================================================== -->
+        <!-- Allure Reporting                                      -->
+        <!-- ===================================================== -->
+
+        <dependency>
+            <groupId>io.qameta.allure</groupId>
+            <artifactId>allure-testng</artifactId>
+            <version>${allure.version}</version>
+        </dependency>
+
+
+        <!-- ===================================================== -->
+        <!-- AspectJ Weaver - Required for Allure                   -->
+        <!-- ===================================================== -->
+
+        <dependency>
+            <groupId>org.aspectj</groupId>
+            <artifactId>aspectjweaver</artifactId>
+            <version>${aspectj.version}</version>
+        </dependency>
+
+
+    </dependencies>
+
+
+    <!-- ========================================================= -->
+    <!-- Build Configuration                                       -->
+    <!-- ========================================================= -->
+
+    <build>
+
         <plugins>
-            <!-- 1. Compiler Configuration Plugin Definition -->
+
+
+            <!-- ================================================= -->
+            <!-- Maven Compiler Plugin                             -->
+            <!-- ================================================= -->
+
             <plugin>
+
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.15.0</version>
+
                 <configuration>
-                    <source>11</source> <!-- Set to matching Java version (e.g. 1.8, 11, 17) -->
-                    <target>11</target>
+
+                    <source>${maven.compiler.source}</source>
+
+                    <target>${maven.compiler.target}</target>
+
+                    <encoding>UTF-8</encoding>
+
                 </configuration>
+
             </plugin>
-          
-            <!-- 2. Surefire Configuration Plugin Definition -->
+
+
+            <!-- ================================================= -->
+            <!-- Maven Surefire Plugin                             -->
+            <!-- ================================================= -->
+
             <plugin>
+
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>3.6.0-M1</version>
-                <!-- FIXED: All configuration blocks are now consolidated safely inside the plugin -->
+
                 <configuration>
-                    <!-- FIXED: Corrected spelling to suiteXmlFile -->
+
+
+                    <!--
+                        Existing Selenium/TestNG Master Suite.
+
+                        KEEPING THIS NOW because we first want to verify
+                        that the original TestNG framework continues
+                        working after adding Cucumber.
+
+                        Later we will create a dedicated Cucumber
+                        execution XML/profile.
+                    -->
+
                     <suiteXmlFiles>
-                        <suiteXmlFile>mastersuite.xml</suiteXmlFile>
+
+                        <suiteXmlFile>
+                            mastersuite.xml
+                        </suiteXmlFile>
+
                     </suiteXmlFiles>
-                    <!-- FIXED: Unified argLine parameters cleanly into the same context wrapper -->
+
+
+                    <!--
+                        AspectJ Weaver used by Allure.
+                    -->
+
                     <argLine>
-                        -javaagent:"${settings.localRepository}/org/aspectj/aspectjweaver/1.9.24/aspectjweaver-1.9.24.jar"
+                        -javaagent:"${settings.localRepository}/org/aspectj/aspectjweaver/${aspectj.version}/aspectjweaver-${aspectj.version}.jar"
                     </argLine>
+
+
                 </configuration>
+
             </plugin>
+
+
         </plugins>
-    </pluginManagement>
-</build>
 
-  <dependencies>
-  <!-- Source: https://mvnrepository.com/artifact/org.seleniumhq.selenium/selenium-java -->
-<dependency>
-    <groupId>org.seleniumhq.selenium</groupId>
-    <artifactId>selenium-java</artifactId>
-    <version>4.44.0</version>
-    <scope>compile</scope>
-</dependency>
-<!-- Source: https://mvnrepository.com/artifact/org.apache.poi/poi -->
-<dependency>
-    <groupId>org.apache.poi</groupId>
-    <artifactId>poi</artifactId>
-    <version>5.5.1</version>
-    <scope>compile</scope>
-</dependency>
-<!-- Source: https://mvnrepository.com/artifact/org.apache.poi/poi-ooxml -->
-<dependency>
-    <groupId>org.apache.poi</groupId>
-    <artifactId>poi-ooxml</artifactId>
-    <version>5.5.1</version>
-    <scope>compile</scope>
-</dependency>
-<!-- Source: https://mvnrepository.com/artifact/org.apache.logging.log4j/log4j-core -->
-<!-- Source: https://mvnrepository.com/artifact/org.apache.logging.log4j/log4j-api -->
-<dependency>
-    <groupId>org.apache.logging.log4j</groupId>
-    <artifactId>log4j-api</artifactId>
-    <version>2.26.0</version>
-    <scope>compile</scope>
-</dependency>
+    </build>
 
-<!-- Source: https://mvnrepository.com/artifact/org.apache.logging.log4j/log4j-core -->
-<dependency>
-    <groupId>org.apache.logging.log4j</groupId>
-    <artifactId>log4j-core</artifactId>
-    <version>2.26.0</version>
-    <scope>compile</scope>
-</dependency>
-
-
-<!-- Source: https://mvnrepository.com/artifact/org.apache.logging.log4j/log4j-slf4j-impl -->
-<dependency>
-    <groupId>org.apache.logging.log4j</groupId>
-    <artifactId>log4j-slf4j2-impl</artifactId>
-    <version>2.26.0</version>
-    <scope>compile</scope>
-</dependency>
-<!-- Source: https://mvnrepository.com/artifact/commons-io/commons-io -->
-<dependency>
-    <groupId>commons-io</groupId>
-    <artifactId>commons-io</artifactId>
-    <version>2.22.0</version>
-    <scope>compile</scope>
-</dependency>
-<!-- Source: https://mvnrepository.com/artifact/commons-fileupload/commons-fileupload -->
-<dependency>
-    <groupId>commons-fileupload</groupId>
-    <artifactId>commons-fileupload</artifactId>
-    <version>1.6.0</version>
-    <scope>compile</scope>
-</dependency>
-<!-- Source: https://mvnrepository.com/artifact/org.apache.commons/commons-lang3 -->
-<dependency>
-    <groupId>org.apache.commons</groupId>
-    <artifactId>commons-lang3</artifactId>
-    <version>3.20.0</version>
-    <scope>compile</scope>
-</dependency>
-<!-- Source: https://mvnrepository.com/artifact/org.testng/testng -->
-<dependency>
-    <groupId>org.testng</groupId>
-    <artifactId>testng</artifactId>
-    <version>7.12.0</version>
-    <scope>test</scope>
-</dependency>
-<!--Allure Report dependency-->
-<dependency>
-    <groupId>io.qameta.allure</groupId>
-    <artifactId>allure-testng</artifactId>
-    <version>2.29.1</version>
-</dependency>
-<!-- Source: https://mvnrepository.com/artifact/org.apache.commons/commons-email -->
-<dependency>
-    <groupId>org.apache.commons</groupId>
-    <artifactId>commons-email</artifactId>
-    <version>1.6.0</version>
-    <scope>compile</scope>
-</dependency>
-<!-- Source: https://mvnrepository.com/artifact/com.aventstack/extentreports -->
-<dependency>
-    <groupId>com.aventstack</groupId>
-    <artifactId>extentreports</artifactId>
-    <version>5.1.2</version>
-    <scope>compile</scope>
-</dependency>
- <!--  <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-      <version>3.8.1</version>
-      <scope>test</scope>
-    </dependency>  
-    --> 
-    <!--AspectJ-->
-    <dependency>
-    <groupId>org.aspectj</groupId>
-    <artifactId>aspectjweaver</artifactId>
-    <version>1.9.24</version>
-</dependency>
-  </dependencies>
- 
 
 </project>
