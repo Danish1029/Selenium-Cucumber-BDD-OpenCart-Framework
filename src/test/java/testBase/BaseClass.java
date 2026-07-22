@@ -45,7 +45,7 @@ public class BaseClass {
    public static WebDriver driver; // make it static so that you can use same instance in Extent report manager
     protected WebDriverWait wait;
     protected Logger logger;
-    protected Properties p;
+    protected  Properties p;
     protected String browserName;
     
  
@@ -509,6 +509,34 @@ switch (browser.toLowerCase().trim())
         
     }
     
+ // ============================================================
+ // Cucumber BDD Setup
+ // Reuses the existing TestNG browser/environment setup
+ // ============================================================
+
+ public void setupCucumber(String os, String browser)
+         throws IOException, InterruptedException {
+
+     setup(os, browser);
+ }
+
+
+ // ============================================================
+ // Cucumber BDD Teardown
+ // ============================================================
+
+ public void tearDownCucumber() {
+
+     if (driver != null) {
+
+         if (logger != null) {
+             logger.info("Closing browser after Cucumber scenario");
+         }
+
+         driver.quit();
+         driver = null;
+     }
+ }
     
     public byte[] getScreenshotBytes() {
 

@@ -11,7 +11,7 @@ public class MyAccountPage extends BasePage {
 	}
 	{
 	System.out.println(driver.getCurrentUrl());
-	System.out.println(driver.getPageSource());
+// 	System.out.println(driver.getPageSource());
 	
 }
 	@FindBy(xpath = "//span[normalize-space()='My Account']") // MyAccount Page heading

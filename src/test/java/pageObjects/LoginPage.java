@@ -21,15 +21,15 @@ public class LoginPage extends BasePage {
 
 
 	public void setEmail(String email) {
-		txtEmailAddress.sendKeys(email);
+	    type(txtEmailAddress, email);
 	}
 
 	public void setPassword(String pwd) {
-		txtPassword.sendKeys(pwd);
+	    type(txtPassword, pwd);
 	}
 
 	public void clickLogin() {
-		btnLogin.click();
+	    click(btnLogin);
 	}
 
 	
