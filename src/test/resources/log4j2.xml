@@ -7,6 +7,11 @@
         <!-- Log Folder -->
         <Property name="log-path">logs</Property>
 
+        <!-- Timestamp generated when Log4j2 starts -->
+        <Property name="execution-time">
+            $${date:yyyy-MM-dd_HH-mm-ss}
+        </Property>
+
         <!-- Log Format -->
         <Property name="log-pattern">
             %d{yyyy-MM-dd HH:mm:ss.SSS} [%t] %-5level %c{1}:%L - %msg%n
@@ -21,45 +26,38 @@
             <PatternLayout pattern="${log-pattern}" />
         </Console>
 
-        <!-- Rolling File Logging -->
-        <RollingFile
+        <!-- One log file for this execution -->
+        <File
                 name="File"
-                fileName="${log-path}/automation.log"
-                filePattern="${log-path}/automation-%d{yyyy-MM-dd}-%i.log.gz">
+                fileName="${log-path}/automation_${execution-time}.log"
+                append="false">
 
             <PatternLayout pattern="${log-pattern}" />
 
-            <Policies>
-
-                <!-- Create new file every day -->
-                <TimeBasedTriggeringPolicy interval="1"/>
-
-                <!-- Create new file when size exceeds -->
-                <SizeBasedTriggeringPolicy size="10 MB"/>
-
-            </Policies>
-
-            <!-- Keep last 30 archived files -->
-            <DefaultRolloverStrategy max="30"/>
-
-        </RollingFile>
+        </File>
 
     </Appenders>
 
     <Loggers>
 
         <!-- Reduce Selenium Internal Logs -->
-        <Logger name="org.openqa.selenium" level="WARN" additivity="false">
+        <Logger name="org.openqa.selenium"
+                level="WARN"
+                additivity="false">
             <AppenderRef ref="File"/>
         </Logger>
 
         <!-- Reduce Apache HTTP Logs -->
-        <Logger name="org.apache.http" level="WARN" additivity="false">
+        <Logger name="org.apache.http"
+                level="WARN"
+                additivity="false">
             <AppenderRef ref="File"/>
         </Logger>
 
         <!-- Reduce WebDriverManager Logs -->
-        <Logger name="io.github.bonigarcia" level="WARN" additivity="false">
+        <Logger name="io.github.bonigarcia"
+                level="WARN"
+                additivity="false">
             <AppenderRef ref="File"/>
         </Logger>
 
@@ -67,7 +65,6 @@
         <Root level="INFO">
 
             <AppenderRef ref="Console"/>
-
             <AppenderRef ref="File"/>
 
         </Root>

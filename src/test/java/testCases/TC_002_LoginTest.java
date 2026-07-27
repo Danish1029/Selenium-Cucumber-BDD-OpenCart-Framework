@@ -41,14 +41,14 @@ public class TC_002_LoginTest extends BaseClass
 		try
 		{
 		//Home page
-		HomePage hp=new HomePage(driver);
+			HomePage hp = new HomePage(getDriver());
 		hp.clickMyAccount();
 		logger.info("clicked on myaccount link on the home page..");
 		hp.clickLogin(); //Login link under MyAccount
 		logger.info("clicked on login link under myaccount..");
 		
 		//Login page
-		LoginPage lp=new LoginPage(driver);
+		LoginPage lp = new LoginPage(getDriver());
 		logger.info("Entering valid email and password..");
 		lp.setEmail(p.getProperty("email"));
 		lp.setPassword(p.getProperty("password"));
@@ -56,7 +56,8 @@ public class TC_002_LoginTest extends BaseClass
 		logger.info("clicked on ligin button..");
 		
 		//My Account Page
-		MyAccountPage macc=new MyAccountPage(driver);
+		MyAccountPage macc =
+		        new MyAccountPage(getDriver());
 				
 		boolean targetPage=macc.isMyAccountPageExists();
 		

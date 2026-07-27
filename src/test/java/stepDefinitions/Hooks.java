@@ -1,6 +1,7 @@
 package stepDefinitions;
 
-import java.io.IOException;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import io.cucumber.java.After;
 import io.cucumber.java.Before;
@@ -10,10 +11,24 @@ import testBase.BaseClass;
 
 public class Hooks extends BaseClass {
 
+    private static final Logger logger =
+            LogManager.getLogger(Hooks.class);
 
     @Before
-    public void setUpScenario(Scenario scenario)
-            throws IOException, InterruptedException {
+    public void beforeScenario(Scenario scenario)
+            throws Exception {
+
+        logger.info(
+                "==============================================");
+
+        logger.info(
+                "Starting Cucumber Scenario: {}",
+                scenario.getName());
+
+        logger.info(
+                "Thread: {}",
+                Thread.currentThread().getName());
+
 
         String browser =
                 System.getProperty(
@@ -25,15 +40,6 @@ public class Hooks extends BaseClass {
                         "os",
                         "windows");
 
-        logger = org.apache.logging.log4j.LogManager
-                .getLogger(Hooks.class);
-
-        logger.info(
-                "==============================================");
-
-        logger.info(
-                "Starting Cucumber Scenario: {}",
-                scenario.getName());
 
         logger.info(
                 "Browser: {}",
@@ -43,6 +49,7 @@ public class Hooks extends BaseClass {
                 "OS: {}",
                 os);
 
+
         setupCucumber(
                 os,
                 browser);
@@ -50,13 +57,12 @@ public class Hooks extends BaseClass {
 
 
     @After
-    public void tearDownScenario(
+    public void afterScenario(
             Scenario scenario) {
 
         try {
 
-            if (scenario.isFailed()
-                    && driver != null) {
+            if (scenario.isFailed()) {
 
                 byte[] screenshot =
                         getScreenshotBytes();
@@ -69,25 +75,21 @@ public class Hooks extends BaseClass {
                 logger.error(
                         "Scenario FAILED: {}",
                         scenario.getName());
-            }
-            else {
+
+            } else {
 
                 logger.info(
                         "Scenario PASSED: {}",
                         scenario.getName());
             }
 
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
 
-            if (logger != null) {
+            logger.error(
+                    "Error during Cucumber teardown",
+                    e);
 
-                logger.error(
-                        "Error during Cucumber teardown",
-                        e);
-            }
-        }
-        finally {
+        } finally {
 
             tearDownCucumber();
         }

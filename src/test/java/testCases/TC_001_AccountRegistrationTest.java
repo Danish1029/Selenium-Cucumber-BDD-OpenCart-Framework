@@ -38,16 +38,15 @@ public class TC_001_AccountRegistrationTest extends BaseClass {
 
         try {
 
-            HomePage hp = new HomePage(driver);
+        	HomePage hp = new HomePage(getDriver());
             logger.info("Before Click My Account");
             hp.clickMyAccount();
             logger.info("Clicked My Account");
 
             hp.clickRegister();
             logger.info("Clicked Register");
-
             AccountRegistrationPage regPage =
-                    new AccountRegistrationPage(driver);
+                    new AccountRegistrationPage(getDriver());
 
             logger.info("Providing customer details");
 

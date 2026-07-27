@@ -18,6 +18,9 @@ public class LoginPage extends BasePage {
 
 	@FindBy(xpath = "//input[@value='Login']")
 	WebElement btnLogin;
+	
+	@FindBy(xpath = "//div[contains(@class,'alert-danger')]")
+	WebElement msgLoginWarning;
 
 
 	public void setEmail(String email) {
@@ -32,6 +35,8 @@ public class LoginPage extends BasePage {
 	    click(btnLogin);
 	}
 
-	
+	public String getLoginWarningMessage() {
+	    return getText(msgLoginWarning);
+	}
 
 }

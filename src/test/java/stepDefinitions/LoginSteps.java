@@ -7,6 +7,7 @@ import java.util.Properties;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.testng.Assert;
+import factory.DriverManager;
 
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
@@ -74,7 +75,7 @@ public class LoginSteps extends BaseClass {
     public void the_user_launches_the_opencart_application() {
 
         Assert.assertNotNull(
-                driver,
+                getDriver(),
                 "WebDriver was not initialized by Cucumber Hooks");
 
         log.info(
@@ -85,8 +86,9 @@ public class LoginSteps extends BaseClass {
     @When("the user navigates to the Login page")
     public void the_user_navigates_to_the_login_page() {
 
-        homePage =
-                new HomePage(driver);
+    	homePage =
+    	        new HomePage(
+    	                DriverManager.getDriver());
 
         homePage.clickMyAccount();
 
@@ -99,7 +101,7 @@ public class LoginSteps extends BaseClass {
                 "Clicked Login");
 
         loginPage =
-                new LoginPage(driver);
+                new LoginPage(DriverManager.getDriver());
     }
 
 
@@ -142,8 +144,9 @@ public class LoginSteps extends BaseClass {
     @Then("the user should be successfully logged in")
     public void the_user_should_be_successfully_logged_in() {
 
-        myAccountPage =
-                new MyAccountPage(driver);
+    	myAccountPage =
+    	        new MyAccountPage(
+    	                DriverManager.getDriver());
 
         boolean accountPageDisplayed =
                 myAccountPage.isMyAccountPageExists();
@@ -155,4 +158,31 @@ public class LoginSteps extends BaseClass {
         log.info(
                 "Login validation successful");
     }
+    @When("the user enters email {string} and password {string}")
+    public void the_user_enters_email_and_password(
+            String email,
+            String password) {
+
+        log.info(
+                "Entering credentials for negative login scenario");
+
+        loginPage.setEmail(email);
+        loginPage.setPassword(password);
+    }
+    @Then("the user should see a login warning message")
+    public void the_user_should_see_a_login_warning_message() {
+
+        String warningMessage =
+                loginPage.getLoginWarningMessage();
+
+        log.info(
+                "Login warning message: {}",
+                warningMessage);
+
+        Assert.assertTrue(
+                warningMessage.contains(
+                        "Warning: No match for E-Mail Address and/or Password."),
+                "Expected invalid login warning was not displayed");
+    }
+    
 }

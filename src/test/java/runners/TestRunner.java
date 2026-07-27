@@ -13,13 +13,16 @@ import io.cucumber.testng.CucumberOptions;
                 "stepDefinitions"
         },
 
-        tags = "@Smoke",
-
-        plugin = {
-                "pretty",
-                "html:target/cucumber-reports/cucumber.html",
-                "json:target/cucumber-reports/cucumber.json"
-        },
+/*        tags = "@Smoke",
+        		tags = "@NegativeLogin",
+        		//		tags = "@Smoke or @NegativeLogin",
+ */
+        		plugin = {
+        		        "pretty",
+        		        "html:target/cucumber-reports/cucumber.html",
+        		        "json:target/cucumber-reports/cucumber.json",
+        		        "io.qameta.allure.cucumber7jvm.AllureCucumber7Jvm"
+        		},
 
         monochrome = true,
 
@@ -31,7 +34,7 @@ public class TestRunner
 
 
     @Override
-    @DataProvider(parallel = false)
+    @DataProvider(parallel = true)
     public Object[][] scenarios() {
 
         return super.scenarios();

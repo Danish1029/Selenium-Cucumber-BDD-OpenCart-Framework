@@ -24,7 +24,20 @@
 
     <properties>
 
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+  <!--      <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>  -->
+  
+  <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+
+    <allure.version>2.29.1</allure.version>
+
+    <maven.build.timestamp.format>
+        yyyy-MM-dd_HH-mm-ss
+    </maven.build.timestamp.format>
+
+    <allure.report.timestamp>
+        ${maven.build.timestamp}
+    </allure.report.timestamp>
+  
 
         <!-- Java -->
         <maven.compiler.source>11</maven.compiler.source>
@@ -36,7 +49,7 @@
 
         <!-- Cucumber -->
         <cucumber.version>7.29.0</cucumber.version>
-
+        <suiteXmlFile>cucumber-testng.xml</suiteXmlFile>
         <!-- Reporting -->
         <allure.version>2.29.1</allure.version>
         <extent.version>5.1.2</extent.version>
@@ -212,6 +225,14 @@
             <version>${allure.version}</version>
         </dependency>
 
+<!-- Allure Cucumber 7 Adapter -->
+<dependency>
+    <groupId>io.qameta.allure</groupId>
+    <artifactId>allure-cucumber7-jvm</artifactId>
+    <version>${allure.version}</version>
+    <scope>test</scope>
+</dependency>
+
 
         <!-- ===================================================== -->
         <!-- AspectJ Weaver - Required for Allure                   -->
@@ -263,48 +284,119 @@
             <!-- Maven Surefire Plugin                             -->
             <!-- ================================================= -->
 
-            <plugin>
+  <plugin>
 
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-surefire-plugin</artifactId>
-                <version>3.6.0-M1</version>
+    <groupId>org.apache.maven.plugins</groupId>
+    <artifactId>maven-surefire-plugin</artifactId>
+    <version>3.5.4</version>
 
-                <configuration>
+    <configuration>
+    
+    <properties>
+    <property>
+        <name>dataproviderthreadcount</name>
+        <value>2</value>
+    </property>
+</properties>
 
+        <suiteXmlFiles>
+            <suiteXmlFile>${suiteXmlFile}</suiteXmlFile>
+        </suiteXmlFiles>
 
-                    <!--
-                        Existing Selenium/TestNG Master Suite.
+        <argLine>
+            -javaagent:"${settings.localRepository}/org/aspectj/aspectjweaver/${aspectj.version}/aspectjweaver-${aspectj.version}.jar"
+        </argLine>
 
-                        KEEPING THIS NOW because we first want to verify
-                        that the original TestNG framework continues
-                        working after adding Cucumber.
+    </configuration>
 
-                        Later we will create a dedicated Cucumber
-                        execution XML/profile.
-                    -->
+    <dependencies>
 
-                    <suiteXmlFiles>
+        <dependency>
+            <groupId>org.apache.maven.surefire</groupId>
+            <artifactId>surefire-testng</artifactId>
+            <version>3.5.4</version>
+        </dependency>
 
-                        <suiteXmlFile>
-                            mastersuite.xml
-                        </suiteXmlFile>
+    </dependencies>
 
-                    </suiteXmlFiles>
+</plugin>
 
+<plugin>
+    <groupId>io.qameta.allure</groupId>
+    <artifactId>allure-maven</artifactId>
+    <version>2.17.0</version>
 
-                    <!--
-                        AspectJ Weaver used by Allure.
-                    -->
+    <configuration>
 
-                    <argLine>
-                        -javaagent:"${settings.localRepository}/org/aspectj/aspectjweaver/${aspectj.version}/aspectjweaver-${aspectj.version}.jar"
-                    </argLine>
+        <resultsDirectory>
+            ${project.build.directory}/allure-results
+        </resultsDirectory>
 
+        <reportDirectory>
+            ${project.build.directory}/allure-report
+        </reportDirectory>
 
-                </configuration>
+    </configuration>
 
-            </plugin>
+    <executions>
 
+        <execution>
+            <id>generate-allure-report</id>
+
+            <phase>post-integration-test</phase>
+
+            <goals>
+                <goal>report</goal>
+            </goals>
+
+        </execution>
+
+    </executions>
+
+</plugin>
+
+<!--  <plugin>
+
+    <groupId>org.apache.maven.plugins</groupId>
+    <artifactId>maven-antrun-plugin</artifactId>
+    <version>3.2.0</version>
+
+    <executions>
+
+        <execution>
+
+            <id>copy-timestamped-allure-report</id>
+
+            <phase>test</phase>
+
+            <configuration>
+
+                <target>
+
+                    <mkdir
+                        dir="${project.basedir}/reports/AllureReport_${allure.report.timestamp}" />
+
+                    <copy
+                        todir="${project.basedir}/reports/AllureReport_${allure.report.timestamp}">
+
+                        <fileset
+                            dir="${project.build.directory}/allure-report" />
+
+                    </copy>
+
+                </target>
+
+            </configuration>
+
+            <goals>
+                <goal>run</goal>
+            </goals>
+
+        </execution>
+
+    </executions>
+
+</plugin>  -->
 
         </plugins>
 

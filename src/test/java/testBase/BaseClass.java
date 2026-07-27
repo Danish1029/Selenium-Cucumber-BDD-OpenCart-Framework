@@ -14,388 +14,519 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+
 import org.openqa.selenium.Dimension;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.MutableCapabilities;
 import org.openqa.selenium.OutputType;
 import org.openqa.selenium.TakesScreenshot;
 import org.openqa.selenium.WebDriver;
+
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
+
 import org.openqa.selenium.edge.EdgeDriver;
 import org.openqa.selenium.edge.EdgeOptions;
+
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.firefox.FirefoxOptions;
+
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.support.ui.WebDriverWait;
+
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Optional;
 import org.testng.annotations.Parameters;
 
+import factory.DriverManager;
+
 public class BaseClass {
-	
-	public ResourceBundle rb;// to read config.properties
-	public String getBrowserName() {
-	    return browserName;
-	}
-	
-	
-	
-   public static WebDriver driver; // make it static so that you can use same instance in Extent report manager
+
+    // ============================================================
+    // Framework Variables
+    // ============================================================
+
+    public ResourceBundle rb;
+
     protected WebDriverWait wait;
+
     protected Logger logger;
-    protected  Properties p;
+
+    protected Properties p;
+
     protected String browserName;
-    
- 
-    @BeforeClass (groups= {"Sanity","Regression","Master"}) //Step8 groups added
-    @Parameters({"os","browser"})  // getting browser parameter from testng.xml
-    
-  
-    
+
+
+    // ============================================================
+    // Driver Getter
+    // ============================================================
+
+    public WebDriver getDriver() {
+
+        return DriverManager.getDriver();
+    }
+
+
+    // ============================================================
+    // Browser Name Getter
+    // ============================================================
+
+    public String getBrowserName() {
+
+        return browserName;
+    }
+
+
+    // ============================================================
+    // TestNG Setup
+    // ============================================================
+
+    @BeforeClass(groups = {
+            "Sanity",
+            "Regression",
+            "Master"
+    })
+    @Parameters({"os", "browser"})
     public void setup(
             @Optional("windows") String os,
             @Optional("chrome") String br)
             throws IOException, InterruptedException {
 
-        // setup code
-    
-    	System.out.println("OS = " + os);
-    	System.out.println("Browser = " + br);
- /*   	System.out.println("Execution Env = "
-    	        + p.getProperty("execution_env"));  */
-
-   /*     try (FileReader file =
-                     new FileReader("./src/test/resources/config.properties")) {
-
-            p = new Properties();
-            p.load(file);
-        }  */
-    	
-    	
-    	String env = System.getProperty("env");
-
-    	if (env == null || env.isBlank()) {
-    	    env = "qa";
-    	}
-
-    	try (FileReader file =
-    	        new FileReader("./src/test/resources/config/" + env + ".properties"))
-    	{
-
-    	    p = new Properties();
-    	    p.load(file);
-    	} 	
-    	
-    	  String browser = System.getProperty("browser");
-
-    	    if (browser == null || browser.isBlank()) {
-    	        browser = br;
-    	    }
-    	    
-    	    boolean headless =
-    	    		Boolean.parseBoolean(
-    	    		System.getProperty("headless","false"));
-    	    
+        // --------------------------------------------------------
+        // Logger
+        // --------------------------------------------------------
 
         logger = LogManager.getLogger(this.getClass());
 
-        logger.info("Launching browser: {}", browser);
-        
-        /*..............Selenium Grid "Remote environment" setup starts here......*/
-        /*..............Selenium Grid Remote Environment Setup Starts Here..............*/
+
+        // --------------------------------------------------------
+        // Environment
+        // --------------------------------------------------------
+
+        String env = System.getProperty("env");
+
+        if (env == null || env.isBlank()) {
+            env = "qa";
+        }
+
+
+        // --------------------------------------------------------
+        // Load Environment Properties
+        // --------------------------------------------------------
+
+        try (FileReader file =
+                     new FileReader(
+                             "./src/test/resources/config/"
+                                     + env
+                                     + ".properties")) {
+
+            p = new Properties();
+
+            p.load(file);
+        }
+
+
+        // --------------------------------------------------------
+        // Browser Resolution
+        //
+        // Priority:
+        // Maven/System property > TestNG XML > default
+        // --------------------------------------------------------
+
+        String browser =
+                System.getProperty("browser");
+
+        if (browser == null || browser.isBlank()) {
+
+            browser = br;
+        }
+
+        browser = browser.toLowerCase().trim();
+
+
+        // --------------------------------------------------------
+        // Headless Resolution
+        // --------------------------------------------------------
+
+        boolean headless =
+                Boolean.parseBoolean(
+                        System.getProperty(
+                                "headless",
+                                "false"));
+
+
+        System.out.println(
+                "Thread  = "
+                        + Thread.currentThread().getName());
+
+        System.out.println(
+                "OS      = " + os);
+
+        System.out.println(
+                "Browser = " + browser);
+
+        System.out.println(
+                "Env     = " + env);
+
+        System.out.println(
+                "Headless = " + headless);
+
+
+        logger.info(
+                "Execution Thread: {}",
+                Thread.currentThread().getName());
+
+        logger.info(
+                "Launching browser: {}",
+                browser);
+
+
+        // --------------------------------------------------------
+        // Execution Environment
+        // --------------------------------------------------------
 
         String executionEnv =
-                p.getProperty("execution_env");
-        
+                p.getProperty(
+                        "execution_env",
+                        "local");
 
-        // ==========================
-        // Remote Execution (Grid)
-        // ==========================
 
-        if (executionEnv.equalsIgnoreCase("remote")) 
-        {
-        	
-    /*  // 1. Read parameter from Jenkins/Maven command line properties
-String browser = System.getProperty("browser");
+        // ========================================================
+        // REMOTE EXECUTION
+        // Selenium Grid / Docker Grid
+        // ========================================================
 
-// 2. Fallback to default browser if no command line parameter is specified
-if (browser == null) {
-    browser = "chrome";
-}
-
-MutableCapabilities capabilities;
-
-// 3. Evaluate and launch the targeted test container environment
-switch (browser.toLowerCase().trim()) 
-{
-    case "chrome":
-        ChromeOptions chromeOptions = new ChromeOptions();
-        capabilities = chromeOptions;
-        driver = new ChromeDriver(chromeOptions);
-        break;
-        
-    case "firefox":
-        FirefoxOptions firefoxOptions = new FirefoxOptions();
-        capabilities = firefoxOptions;
-        driver = new FirefoxDriver(firefoxOptions);
-        break;
-        
-    case "edge":
-        EdgeOptions edgeOptions = new EdgeOptions();
-        capabilities = edgeOptions;
-        driver = new EdgeDriver(edgeOptions);
-        break;
-        
-    default:
-        throw new IllegalArgumentException("Invalid browser selection: " + browser);
-}   */  	
-            MutableCapabilities capabilities;
-
-            // Browser Configuration
-
-  //          switch (br.toLowerCase())
-            switch (browser.toLowerCase())        
-            {
-            case "chrome":
-
-                ChromeOptions chromeOptions =
-                        new ChromeOptions();
-
-                chromeOptions.addArguments(
-                        "--no-sandbox");
-
-                chromeOptions.addArguments(
-                        "--disable-dev-shm-usage");
-
-                chromeOptions.addArguments(
-                        "--window-size=1920,1080");
-
-              
-                if(headless)
-                {
-                    chromeOptions.addArguments("--headless=new");
-                }
-                
-                capabilities = chromeOptions;
-                driver = new ChromeDriver(chromeOptions);
-
-                browserName = "Chrome";
-
-                break;
-
-            case "edge":
-
-                EdgeOptions edgeOptions =
-                        new EdgeOptions();
-                
-                edgeOptions.addArguments(
-                        "--no-sandbox");
-
-                edgeOptions.addArguments(
-                        "--disable-dev-shm-usage");
-
-                edgeOptions.addArguments(
-                        "--window-size=1920,1080");
-
-              
-                if(headless)
-                {
-                    edgeOptions.addArguments("--headless=new");
-                }   
-
-                capabilities = edgeOptions;
-                driver = new EdgeDriver(edgeOptions);
-
-                browserName = "Edge";
-
-                break;
-
-            case "firefox":
-
-                FirefoxOptions firefoxOptions =
-                        new FirefoxOptions();
-
-                firefoxOptions.addArguments(
-                        "--no-sandbox");
-
-                firefoxOptions.addArguments(
-                        "--disable-dev-shm-usage");
-
-                firefoxOptions.addArguments(
-                        "--window-size=1920,1080");
-
-              
-                if(headless)
-                {
-                    firefoxOptions.addArguments("--headless=new");
-                }      
-                
-                
-                capabilities = firefoxOptions;
-                driver = new FirefoxDriver(firefoxOptions);
-
-                browserName = "Firefox";
-
-                break;
-
-            default:
-
-                throw new IllegalArgumentException(
-                        "Unsupported browser selection : " + browser);
-        }
-            // Platform Configuration
-
-            if (os.equalsIgnoreCase("windows"))
-            {
-                capabilities.setCapability(
-                        "platformName",
-                        "Windows");
-            }
-            else if (os.equalsIgnoreCase("mac"))
-            {
-                capabilities.setCapability(
-                        "platformName",
-                        "macOS");
-            }
-            else if (os.equalsIgnoreCase("linux"))
-            {
-                capabilities.setCapability(
-                        "platformName",
-                        "Linux");
-            }
-            else
-            {
-                throw new IllegalArgumentException(
-                        "Unsupported OS : " + os);
-            }
+        if (executionEnv.equalsIgnoreCase("remote")) {
 
             logger.info(
                     "Starting Remote Execution");
 
- /*           logger.info(
-                    "Browser : " + br); */
-            
-            logger.info("Browser : {}", browser);       
+            MutableCapabilities capabilities;
+
+
+            switch (browser) {
+
+                // ------------------------------------------------
+                // Chrome Remote
+                // ------------------------------------------------
+
+                case "chrome":
+
+                    ChromeOptions chromeOptions =
+                            new ChromeOptions();
+
+                    chromeOptions.addArguments(
+                            "--no-sandbox");
+
+                    chromeOptions.addArguments(
+                            "--disable-dev-shm-usage");
+
+                    chromeOptions.addArguments(
+                            "--window-size=1920,1080");
+
+                    if (headless) {
+
+                        chromeOptions.addArguments(
+                                "--headless=new");
+                    }
+
+                    capabilities = chromeOptions;
+
+                    browserName = "Chrome";
+
+                    break;
+
+
+                // ------------------------------------------------
+                // Edge Remote
+                // ------------------------------------------------
+
+                case "edge":
+
+                    EdgeOptions edgeOptions =
+                            new EdgeOptions();
+
+                    edgeOptions.addArguments(
+                            "--no-sandbox");
+
+                    edgeOptions.addArguments(
+                            "--disable-dev-shm-usage");
+
+                    edgeOptions.addArguments(
+                            "--window-size=1920,1080");
+
+                    if (headless) {
+
+                        edgeOptions.addArguments(
+                                "--headless=new");
+                    }
+
+                    capabilities = edgeOptions;
+
+                    browserName = "Edge";
+
+                    break;
+
+
+                // ------------------------------------------------
+                // Firefox Remote
+                // ------------------------------------------------
+
+                case "firefox":
+
+                    FirefoxOptions firefoxOptions =
+                            new FirefoxOptions();
+
+                    firefoxOptions.addArguments(
+                            "--window-size=1920,1080");
+
+                    if (headless) {
+
+                        firefoxOptions.addArguments(
+                                "-headless");
+                    }
+
+                    capabilities = firefoxOptions;
+
+                    browserName = "Firefox";
+
+                    break;
+
+
+                default:
+
+                    throw new IllegalArgumentException(
+                            "Unsupported browser: "
+                                    + browser);
+            }
+
+
+            // ----------------------------------------------------
+            // Platform
+            // ----------------------------------------------------
+
+            if (os.equalsIgnoreCase("windows")) {
+
+                capabilities.setCapability(
+                        "platformName",
+                        "Windows");
+
+            } else if (os.equalsIgnoreCase("mac")) {
+
+                capabilities.setCapability(
+                        "platformName",
+                        "macOS");
+
+            } else if (os.equalsIgnoreCase("linux")) {
+
+                capabilities.setCapability(
+                        "platformName",
+                        "Linux");
+
+            } else {
+
+                throw new IllegalArgumentException(
+                        "Unsupported OS: " + os);
+            }
+
+
+            // ----------------------------------------------------
+            // Grid URL
+            // ----------------------------------------------------
+
+            String gridURL =
+                    System.getProperty(
+                            "gridURL",
+                            "http://localhost:4444");
+
 
             logger.info(
-                    "Operating System : " + os);
+                    "Grid URL: {}",
+                    gridURL);
 
-            driver =
+            logger.info(
+                    "Browser: {}",
+                    browser);
+
+            logger.info(
+                    "Operating System: {}",
+                    os);
+
+
+            // ----------------------------------------------------
+            // Create Remote Driver
+            // ----------------------------------------------------
+
+            WebDriver remoteDriver =
                     new RemoteWebDriver(
-                            new URL(
-                                    "http://localhost:4444"),
+                            new URL(gridURL),
                             capabilities);
+
+
+            // ----------------------------------------------------
+            // Store driver inside current ThreadLocal
+            // ----------------------------------------------------
+
+            DriverManager.setDriver(
+                    remoteDriver);
+
 
             logger.info(
                     "Connected to Selenium Grid");
         }
-        /*..............Selenium Grid environment setup ends here......*/
-        /*.............. Remote Environment Ends Here..............*/
-        // ==========================
-        // Local Execution
-        // ==========================
-        /*..............Local environment setup starts here......*/
-        
+
+
+        // ========================================================
+        // LOCAL EXECUTION
+        // ========================================================
+
         else if (executionEnv.equalsIgnoreCase("local")) {
-            
-        	  logger.info(
-                      "Connected to Selenium local env");
-          
 
-   //       switch (br.toLowerCase()) {
-          switch(browser.toLowerCase()) {
-              case "chrome":
-              	 browserName = "Chrome";
-       //           driver = new ChromeDriver();
-              	 
-              	ChromeOptions chromeoptions = new ChromeOptions();
+            logger.info(
+                    "Starting Local Execution");
 
-              	if(headless)
-              	{
-              	    chromeoptions.addArguments("--headless=new");
-              	}
 
-              	driver = new ChromeDriver(chromeoptions);      	 
-              	 
-              	 
-              	 
-                  driver.manage().window().maximize();
+            WebDriver localDriver;
 
-                  driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(10));
-                  break;
 
-              case "edge":
-              	browserName = "Edge";
-  //                driver = new EdgeDriver();
-              	
-              	EdgeOptions edgeOptions = new EdgeOptions();
+            switch (browser) {
 
-              	if(headless)
-              	{
-              	    edgeOptions.addArguments("--headless=new");
-              	}
+                // ------------------------------------------------
+                // Chrome Local
+                // ------------------------------------------------
 
-              	driver = new EdgeDriver(edgeOptions);            	
-              	
-              	
-                  driver.manage().window().maximize();
+                case "chrome":
 
-                  driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(10));
-                  break;
+                    ChromeOptions chromeOptions =
+                            new ChromeOptions();
 
-              case "firefox":
-              	 browserName = "Firefox";
-//                  driver = new FirefoxDriver();
-  
-              	 
-              	FirefoxOptions fireoptions = new FirefoxOptions();
+                    if (headless) {
 
-              	if(headless)
-              	{
-              	    fireoptions.addArguments("-headless");
-              	}
+                        chromeOptions.addArguments(
+                                "--headless=new");
 
-              	driver = new FirefoxDriver(fireoptions);            	 
-              	 
-              	 
-              	 
-              	 driver.manage().window().maximize();
+                        chromeOptions.addArguments(
+                                "--window-size=1920,1080");
+                    }
 
-                  driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(10));
-                  break;
+                    localDriver =
+                            new ChromeDriver(
+                                    chromeOptions);
 
-              default:
-                  throw new IllegalArgumentException(
-                          "Invalid browser name: " + browser);
-                 }
-          
-          logger.info("Starting Local Execution");
+                    browserName = "Chrome";
 
-          logger.info("Browser : {}", browser);
-          }
-          
-          else {
+                    break;
 
-              throw new RuntimeException(
-                      "Invalid execution_env value in config.properties");
-          }
-        	
-        	if(driver == null)
-        	{
-        	    throw new RuntimeException(
-        	            "Driver was not initialized. " +
-        	            "Browser=" + browser +
-        	            ", OS=" + os +
-        	            ", Env=" + p.getProperty("execution_env"));
-        	}
-        	
-            // ==========================
-        // Common Setup
-        // ==========================
 
-        driver.manage().deleteAllCookies();
+                // ------------------------------------------------
+                // Edge Local
+                // ------------------------------------------------
+
+                case "edge":
+
+                    EdgeOptions edgeOptions =
+                            new EdgeOptions();
+
+                    if (headless) {
+
+                        edgeOptions.addArguments(
+                                "--headless=new");
+
+                        edgeOptions.addArguments(
+                                "--window-size=1920,1080");
+                    }
+
+                    localDriver =
+                            new EdgeDriver(
+                                    edgeOptions);
+
+                    browserName = "Edge";
+
+                    break;
+
+
+                // ------------------------------------------------
+                // Firefox Local
+                // ------------------------------------------------
+
+                case "firefox":
+
+                    FirefoxOptions firefoxOptions =
+                            new FirefoxOptions();
+
+                    if (headless) {
+
+                        firefoxOptions.addArguments(
+                                "-headless");
+                    }
+
+                    localDriver =
+                            new FirefoxDriver(
+                                    firefoxOptions);
+
+                    browserName = "Firefox";
+
+                    break;
+
+
+                default:
+
+                    throw new IllegalArgumentException(
+                            "Invalid browser name: "
+                                    + browser);
+            }
+
+
+            // ----------------------------------------------------
+            // Store driver inside current ThreadLocal
+            // ----------------------------------------------------
+
+            DriverManager.setDriver(
+                    localDriver);
+
+
+            logger.info(
+                    "Connected to Selenium local environment");
+
+            logger.info(
+                    "Browser: {}",
+                    browser);
+        }
+
+
+        // ========================================================
+        // Invalid Environment
+        // ========================================================
+
+        else {
+
+            throw new IllegalArgumentException(
+                    "Invalid execution_env value: "
+                            + executionEnv);
+        }
+
+
+        // ========================================================
+        // Obtain Current Thread Driver
+        // ========================================================
+
+        WebDriver driver =
+                DriverManager.getDriver();
+
+
+        logger.info(
+                "Driver created for thread: {}",
+                Thread.currentThread().getName());
+
+
+        // ========================================================
+        // Common WebDriver Configuration
+        // ========================================================
+
+        driver.manage()
+                .deleteAllCookies();
+
 
         int implicitWait =
                 Integer.parseInt(
@@ -403,20 +534,30 @@ switch (browser.toLowerCase().trim())
                                 "implicitWait",
                                 "10"));
 
+
         int explicitWait =
                 Integer.parseInt(
                         p.getProperty(
                                 "explicitWait",
                                 "10"));
 
-        driver.manage().timeouts()
+
+        driver.manage()
+                .timeouts()
                 .implicitlyWait(
                         Duration.ofSeconds(
                                 implicitWait));
 
-        driver.manage().timeouts()
+
+        driver.manage()
+                .timeouts()
                 .pageLoadTimeout(
                         Duration.ofSeconds(30));
+
+
+        // --------------------------------------------------------
+        // Explicit Wait
+        // --------------------------------------------------------
 
         wait =
                 new WebDriverWait(
@@ -424,202 +565,301 @@ switch (browser.toLowerCase().trim())
                         Duration.ofSeconds(
                                 explicitWait));
 
-        driver.manage()
-                .window()
-                .setSize(
-                        new Dimension(
-                                1920,
-                                1080));
 
-        logger.info("Opening URL");
+        // --------------------------------------------------------
+        // Window
+        // --------------------------------------------------------
+
+        try {
+
+            driver.manage()
+                    .window()
+                    .setSize(
+                            new Dimension(
+                                    1920,
+                                    1080));
+
+        } catch (Exception e) {
+
+            logger.warn(
+                    "Unable to resize browser window: {}",
+                    e.getMessage());
+        }
+
+
+        // ========================================================
+        // Open Application
+        // ========================================================
+
+        String appURL =
+                p.getProperty("appURL");
+
+
+        if (appURL == null
+                || appURL.isBlank()) {
+
+            throw new IllegalStateException(
+                    "appURL is missing from "
+                            + env
+                            + ".properties");
+        }
+
+
+        logger.info(
+                "Opening URL: {}",
+                appURL);
+
 
         driver.get(
-                p.getProperty("appURL"));// get url from config.properties file
-        
- //       driver.get(p.getProperty("appURL1"));
-        
-    	System.out.println("Title = " + driver.getTitle());
-
-    	System.out.println("URL = " + driver.getCurrentUrl());
+                appURL);
 
 
-    	Thread.sleep(1000);
-  
-        
+        // ========================================================
+        // Wait for document.readyState
+        // ========================================================
+
         new WebDriverWait(
                 driver,
                 Duration.ofSeconds(30))
                 .until(webDriver ->
-                        ((JavascriptExecutor) webDriver)
-                                .executeScript(
-                                        "return document.readyState")
-                                .equals("complete"));
-        
-        logger.info("URL = {}", driver.getCurrentUrl());
 
-        logger.info("Title = {}", driver.getTitle());
+                        "complete".equals(
+
+                                ((JavascriptExecutor)
+                                        webDriver)
+                                        .executeScript(
+                                                "return document.readyState")
+                        )
+                );
+
+
+        // ========================================================
+        // Execution Information
+        // ========================================================
+
+        System.out.println(
+                "Title = "
+                        + driver.getTitle());
+
+        System.out.println(
+                "URL = "
+                        + driver.getCurrentUrl());
+
 
         logger.info(
-                "Browser : {}",
+                "URL = {}",
+                driver.getCurrentUrl());
+
+        logger.info(
+                "Title = {}",
+                driver.getTitle());
+
+        logger.info(
+                "Browser = {}",
                 browserName);
-        
-        logger.info("ReadyState = {}",
-                ((JavascriptExecutor)driver)
+
+        logger.info(
+                "ReadyState = {}",
+                ((JavascriptExecutor) driver)
                         .executeScript(
                                 "return document.readyState"));
 
-  /*      logger.info("Page Source Length = {}",
-                driver.getPageSource().length());
-                
-          System.out.println(
-        "Page Source Length = "
-        + driver.getPageSource().length());      
-                 
-                 */
-        
+
         logger.info(
                 "My Account Present = {}",
-                driver.getPageSource().contains("My Account"));
-        
-        System.out.println(
-                "Window Size = "
-                + driver.manage()
+                driver.getPageSource()
+                        .contains(
+                                "My Account"));
+
+
+        logger.info(
+                "Window Size = {}",
+                driver.manage()
                         .window()
                         .getSize());
-        
-        Thread.sleep(5000);
 
-        File src =
-                ((TakesScreenshot) driver)
-                        .getScreenshotAs(OutputType.FILE);
 
-        FileUtils.copyFile(
-                src,
-                new File("homepage.png"));
-        
-        logger.info("Current URL: {}", driver.getCurrentUrl());
-
-        logger.info("Page Title: {}", driver.getTitle());
-
- /*       System.out.println("URL = " + driver.getCurrentUrl());
-
-        System.out.println("Title = " + driver.getTitle()); */
-        
-    
-        
+        logger.info(
+                "Driver setup completed for thread: {}",
+                Thread.currentThread().getName());
     }
-    
- // ============================================================
- // Cucumber BDD Setup
- // Reuses the existing TestNG browser/environment setup
- // ============================================================
-
- public void setupCucumber(String os, String browser)
-         throws IOException, InterruptedException {
-
-     setup(os, browser);
- }
 
 
- // ============================================================
- // Cucumber BDD Teardown
- // ============================================================
+    // ============================================================
+    // CUCUMBER SETUP
+    // ============================================================
 
- public void tearDownCucumber() {
+    public void setupCucumber(
+            String os,
+            String browser)
+            throws IOException, InterruptedException {
 
-     if (driver != null) {
-
-         if (logger != null) {
-             logger.info("Closing browser after Cucumber scenario");
-         }
-
-         driver.quit();
-         driver = null;
-     }
- }
-    
-    public byte[] getScreenshotBytes() {
-
-        return ((TakesScreenshot) driver)
-                .getScreenshotAs(OutputType.BYTES);
+        setup(
+                os,
+                browser);
     }
-    
-    @AfterClass (groups= {"Sanity","Regression","Master"})
+
+
+    // ============================================================
+    // CUCUMBER TEARDOWN
+    // ============================================================
+
+    public void tearDownCucumber() {
+
+        if (logger != null) {
+
+            logger.info(
+                    "Closing Cucumber browser on thread: {}",
+                    Thread.currentThread().getName());
+        }
+
+
+        DriverManager.quitDriver();
+    }
+
+
+    // ============================================================
+    // TESTNG TEARDOWN
+    // ============================================================
+
+    @AfterClass(groups = {
+            "Sanity",
+            "Regression",
+            "Master"
+    })
     public void tearDown() {
 
-        if (driver != null) {
-            logger.info("Closing browser");
-            driver.quit();
-            driver = null;
+        if (logger != null) {
+
+            logger.info(
+                    "Closing TestNG browser on thread: {}",
+                    Thread.currentThread().getName());
         }
+
+
+        DriverManager.quitDriver();
     }
+
+
+    // ============================================================
+    // SCREENSHOT AS BYTES
+    // Used by Cucumber Scenario.attach()
+    // ============================================================
+
+    public byte[] getScreenshotBytes() {
+
+        WebDriver driver =
+                DriverManager.getDriver();
+
+
+        return ((TakesScreenshot) driver)
+                .getScreenshotAs(
+                        OutputType.BYTES);
+    }
+
+
+    // ============================================================
+    // SCREENSHOT AS FILE
+    // ============================================================
+
+    public String captureScreen(
+            String testName)
+            throws IOException {
+
+        WebDriver driver =
+                DriverManager.getDriver();
+
+
+        String timeStamp =
+                new SimpleDateFormat(
+                        "yyyy-MM-dd_HH-mm-ss-SSS")
+                        .format(
+                                new Date());
+
+
+        TakesScreenshot takesScreenshot =
+                (TakesScreenshot) driver;
+
+
+        File source =
+                takesScreenshot
+                        .getScreenshotAs(
+                                OutputType.FILE);
+
+
+        String destination =
+                System.getProperty(
+                        "user.dir")
+                        + File.separator
+                        + "screenshots"
+                        + File.separator
+                        + testName
+                        + "_"
+                        + timeStamp
+                        + "_"
+                        + Thread.currentThread()
+                                .getId()
+                        + ".png";
+
+
+        File destinationFile =
+                new File(
+                        destination);
+
+
+        File parent =
+                destinationFile
+                        .getParentFile();
+
+
+        if (parent != null) {
+
+            parent.mkdirs();
+        }
+
+
+        FileUtils.copyFile(
+                source,
+                destinationFile);
+
+
+        logger.info(
+                "Screenshot saved: {}",
+                destination);
+
+
+        return destination;
+    }
+
+
+    // ============================================================
+    // RANDOM TEST DATA
+    // ============================================================
 
     public String randomString() {
-        return RandomStringUtils.insecure().nextAlphabetic(6);
+
+        return RandomStringUtils
+                .insecure()
+                .nextAlphabetic(6);
     }
+
 
     public String randomNumber() {
-        return RandomStringUtils.insecure().nextNumeric(10);
+
+        return RandomStringUtils
+                .insecure()
+                .nextNumeric(10);
     }
+
 
     public String randomAlphaNumeric() {
-        return RandomStringUtils.insecure().nextAlphabetic(6)
+
+        return RandomStringUtils
+                .insecure()
+                .nextAlphabetic(6)
                 + "@"
-                + RandomStringUtils.insecure().nextNumeric(10);
+                + RandomStringUtils
+                        .insecure()
+                        .nextNumeric(10);
     }
-
-    public String captureScreen(String tname) throws IOException {
-
-		String timeStamp = new SimpleDateFormat("yyyyMMddhhmmss").format(new Date());
-		TakesScreenshot takesScreenshot = (TakesScreenshot) driver;
-		File source = takesScreenshot.getScreenshotAs(OutputType.FILE);
-		String destination = System.getProperty("user.dir") + "\\screenshots\\" + tname + "_" + timeStamp + ".png";
-
-		try {
-			FileUtils.copyFile(source, new File(destination));
-		} catch (Exception e) {
-			e.getMessage();
-		}
-		return destination;
-
-	}
-	
 }
-
-/*   
- public class BaseClass {
-	
-	public ResourceBundle rb;// to read config.properties
-	
-	public Logger logger;// for Logging
-	
-	public static WebDriver driver;  // make it static so that you can use same instance in Extent report manager
-	
-
-	@BeforeClass(groups = { "Master", "Sanity", "Regression" }) //Step8 groups added
-	@Parameters("browser")   // getting browser parameter from testng.xml
-	public void setup(String br)
-	{
-		rb = ResourceBundle.getBundle("config");// Load config.properties
-				
-		logger = LogManager.getLogger(this.getClass());// for Logger  
-		
-		//launch right browser based on parameter
-		if (br.equals("chrome")) {
-			WebDriverManager.chromedriver().setup();
-			driver = new ChromeDriver();
-		} else if (br.equals("edge")) {
-			WebDriverManager.edgedriver().setup();
-			driver = new EdgeDriver();
-		} else {
-			WebDriverManager.chromedriver().setup();
-			driver = new ChromeDriver();
-		}
-					
-		driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(10));
-
-		driver.get(rb.getString("appURL")); // get url from config.properties file
-		driver.manage().window().maximize();
-	}
-
-      */
