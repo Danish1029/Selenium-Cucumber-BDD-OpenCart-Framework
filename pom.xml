@@ -23,21 +23,10 @@
     <!-- ========================================================= -->
 
     <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
-  <!--      <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>  -->
-  
-  <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-
-    <allure.version>2.29.1</allure.version>
-
-    <maven.build.timestamp.format>
-        yyyy-MM-dd_HH-mm-ss
-    </maven.build.timestamp.format>
-
-    <allure.report.timestamp>
-        ${maven.build.timestamp}
-    </allure.report.timestamp>
-  
+        <maven.build.timestamp.format>yyyy-MM-dd_HH-mm-ss</maven.build.timestamp.format>
+        <allure.report.timestamp>${maven.build.timestamp}</allure.report.timestamp>
 
         <!-- Java -->
         <maven.compiler.source>11</maven.compiler.source>
@@ -46,42 +35,32 @@
         <!-- Framework Versions -->
         <selenium.version>4.44.0</selenium.version>
         <testng.version>7.12.0</testng.version>
-
-        <!-- Cucumber -->
         <cucumber.version>7.29.0</cucumber.version>
-        <suiteXmlFile>cucumber-testng.xml</suiteXmlFile>
-        <!-- Reporting -->
+
+        <!-- Default TestNG Suite XML (Override via -DsuiteXmlFile=...) -->
+        <suiteXmlFile>testng</suiteXmlFile>
+
+        <!-- Reporting & AspectJ -->
         <allure.version>2.29.1</allure.version>
         <extent.version>5.1.2</extent.version>
-
-        <!-- AspectJ -->
         <aspectj.version>1.9.24</aspectj.version>
-
     </properties>
 
 
     <!-- ========================================================= -->
-    <!-- Dependencies                                               -->
+    <!-- Dependencies                                              -->
     <!-- ========================================================= -->
 
     <dependencies>
 
-
-        <!-- ===================================================== -->
-        <!-- Selenium                                              -->
-        <!-- ===================================================== -->
-
+        <!-- Selenium -->
         <dependency>
             <groupId>org.seleniumhq.selenium</groupId>
             <artifactId>selenium-java</artifactId>
             <version>${selenium.version}</version>
         </dependency>
 
-
-        <!-- ===================================================== -->
-        <!-- TestNG                                                -->
-        <!-- ===================================================== -->
-
+        <!-- TestNG -->
         <dependency>
             <groupId>org.testng</groupId>
             <artifactId>testng</artifactId>
@@ -89,38 +68,13 @@
             <scope>test</scope>
         </dependency>
 
-
-        <!-- ===================================================== -->
-        <!-- Cucumber BDD                                          -->
-        <!-- ===================================================== -->
-
-        <!--
-            Provides:
-            @Given
-            @When
-            @Then
-            @And
-            @But
-
-            Also provides Cucumber Java step-definition support.
-        -->
-
+        <!-- Cucumber BDD -->
         <dependency>
             <groupId>io.cucumber</groupId>
             <artifactId>cucumber-java</artifactId>
             <version>${cucumber.version}</version>
             <scope>test</scope>
         </dependency>
-
-
-        <!--
-            Integrates Cucumber with TestNG.
-
-            This allows us to use:
-            AbstractTestNGCucumberTests
-            @CucumberOptions
-            TestNG parallel execution
-        -->
 
         <dependency>
             <groupId>io.cucumber</groupId>
@@ -129,11 +83,7 @@
             <scope>test</scope>
         </dependency>
 
-
-        <!-- ===================================================== -->
-        <!-- Apache POI - Excel/Data Driven Testing                 -->
-        <!-- ===================================================== -->
-
+        <!-- Apache POI - Excel/Data Driven Testing -->
         <dependency>
             <groupId>org.apache.poi</groupId>
             <artifactId>poi</artifactId>
@@ -146,11 +96,7 @@
             <version>5.5.1</version>
         </dependency>
 
-
-        <!-- ===================================================== -->
-        <!-- Log4j2 Logging                                        -->
-        <!-- ===================================================== -->
-
+        <!-- Log4j2 Logging -->
         <dependency>
             <groupId>org.apache.logging.log4j</groupId>
             <artifactId>log4j-api</artifactId>
@@ -169,11 +115,7 @@
             <version>2.26.0</version>
         </dependency>
 
-
-        <!-- ===================================================== -->
-        <!-- Apache Commons                                        -->
-        <!-- ===================================================== -->
-
+        <!-- Apache Commons -->
         <dependency>
             <groupId>commons-io</groupId>
             <artifactId>commons-io</artifactId>
@@ -192,58 +134,46 @@
             <version>3.20.0</version>
         </dependency>
 
-
-        <!-- ===================================================== -->
-        <!-- Email Utility                                         -->
-        <!-- ===================================================== -->
-
+        <!-- Email Utility -->
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-email</artifactId>
             <version>1.6.0</version>
         </dependency>
 
-
-        <!-- ===================================================== -->
-        <!-- Extent Reports                                        -->
-        <!-- ===================================================== -->
-
+        <!-- Extent Reports -->
         <dependency>
             <groupId>com.aventstack</groupId>
             <artifactId>extentreports</artifactId>
             <version>${extent.version}</version>
         </dependency>
 
+        <dependency>
+            <groupId>tech.grasshopper</groupId>
+            <artifactId>extentreports-cucumber7-adapter</artifactId>
+            <version>1.14.0</version>
+        </dependency>
 
-        <!-- ===================================================== -->
-        <!-- Allure Reporting                                      -->
-        <!-- ===================================================== -->
-
+        <!-- Allure Reporting -->
         <dependency>
             <groupId>io.qameta.allure</groupId>
             <artifactId>allure-testng</artifactId>
             <version>${allure.version}</version>
         </dependency>
 
-<!-- Allure Cucumber 7 Adapter -->
-<dependency>
-    <groupId>io.qameta.allure</groupId>
-    <artifactId>allure-cucumber7-jvm</artifactId>
-    <version>${allure.version}</version>
-    <scope>test</scope>
-</dependency>
+        <dependency>
+            <groupId>io.qameta.allure</groupId>
+            <artifactId>allure-cucumber7-jvm</artifactId>
+            <version>${allure.version}</version>
+            <scope>test</scope>
+        </dependency>
 
-
-        <!-- ===================================================== -->
-        <!-- AspectJ Weaver - Required for Allure                   -->
-        <!-- ===================================================== -->
-
+        <!-- AspectJ Weaver - Required for Allure -->
         <dependency>
             <groupId>org.aspectj</groupId>
             <artifactId>aspectjweaver</artifactId>
             <version>${aspectj.version}</version>
         </dependency>
-
 
     </dependencies>
 
@@ -253,154 +183,82 @@
     <!-- ========================================================= -->
 
     <build>
-
         <plugins>
 
-
-            <!-- ================================================= -->
-            <!-- Maven Compiler Plugin                             -->
-            <!-- ================================================= -->
-
+            <!-- Maven Compiler Plugin -->
             <plugin>
-
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.15.0</version>
-
                 <configuration>
-
                     <source>${maven.compiler.source}</source>
-
                     <target>${maven.compiler.target}</target>
-
                     <encoding>UTF-8</encoding>
-
                 </configuration>
-
             </plugin>
 
+            <!-- Maven Surefire Plugin -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>3.5.4</version>
+                <configuration>
+                    <properties>
+                        <property>
+                            <name>dataproviderthreadcount</name>
+                            <value>2</value>
+                        </property>
+                    </properties>
 
-            <!-- ================================================= -->
-            <!-- Maven Surefire Plugin                             -->
-            <!-- ================================================= -->
+                    <suiteXmlFiles>
+                        <suiteXmlFile>${suiteXmlFile}.xml</suiteXmlFile>
+                    </suiteXmlFiles>
 
-  <plugin>
+                    <systemPropertyVariables>
+                        <env>${env}</env>
+                        <browser>${browser}</browser>
+                        <os>${os}</os>
+                        <execution_env>${execution_env}</execution_env>
+                        <gridURL>${gridURL}</gridURL>
+                        <headless>${headless}</headless>
+                        <dataproviderthreadcount>${dataproviderthreadcount}</dataproviderthreadcount>
+                    </systemPropertyVariables>
 
-    <groupId>org.apache.maven.plugins</groupId>
-    <artifactId>maven-surefire-plugin</artifactId>
-    <version>3.5.4</version>
+                    <argLine>
+                        -javaagent:"${settings.localRepository}/org/aspectj/aspectjweaver/${aspectj.version}/aspectjweaver-${aspectj.version}.jar"
+                    </argLine>
+                </configuration>
 
-    <configuration>
-    
-    <properties>
-    <property>
-        <name>dataproviderthreadcount</name>
-        <value>2</value>
-    </property>
-</properties>
+                <dependencies>
+                    <dependency>
+                        <groupId>org.apache.maven.surefire</groupId>
+                        <artifactId>surefire-testng</artifactId>
+                        <version>3.5.4</version>
+                    </dependency>
+                </dependencies>
+            </plugin>
 
-        <suiteXmlFiles>
-            <suiteXmlFile>${suiteXmlFile}</suiteXmlFile>
-        </suiteXmlFiles>
-
-        <argLine>
-            -javaagent:"${settings.localRepository}/org/aspectj/aspectjweaver/${aspectj.version}/aspectjweaver-${aspectj.version}.jar"
-        </argLine>
-
-    </configuration>
-
-    <dependencies>
-
-        <dependency>
-            <groupId>org.apache.maven.surefire</groupId>
-            <artifactId>surefire-testng</artifactId>
-            <version>3.5.4</version>
-        </dependency>
-
-    </dependencies>
-
-</plugin>
-
-<plugin>
-    <groupId>io.qameta.allure</groupId>
-    <artifactId>allure-maven</artifactId>
-    <version>2.17.0</version>
-
-    <configuration>
-
-        <resultsDirectory>
-            ${project.build.directory}/allure-results
-        </resultsDirectory>
-
-        <reportDirectory>
-            ${project.build.directory}/allure-report
-        </reportDirectory>
-
-    </configuration>
-
-    <executions>
-
-        <execution>
-            <id>generate-allure-report</id>
-
-            <phase>post-integration-test</phase>
-
-            <goals>
-                <goal>report</goal>
-            </goals>
-
-        </execution>
-
-    </executions>
-
-</plugin>
-
-<!--  <plugin>
-
-    <groupId>org.apache.maven.plugins</groupId>
-    <artifactId>maven-antrun-plugin</artifactId>
-    <version>3.2.0</version>
-
-    <executions>
-
-        <execution>
-
-            <id>copy-timestamped-allure-report</id>
-
-            <phase>test</phase>
-
-            <configuration>
-
-                <target>
-
-                    <mkdir
-                        dir="${project.basedir}/reports/AllureReport_${allure.report.timestamp}" />
-
-                    <copy
-                        todir="${project.basedir}/reports/AllureReport_${allure.report.timestamp}">
-
-                        <fileset
-                            dir="${project.build.directory}/allure-report" />
-
-                    </copy>
-
-                </target>
-
-            </configuration>
-
-            <goals>
-                <goal>run</goal>
-            </goals>
-
-        </execution>
-
-    </executions>
-
-</plugin>  -->
+            <!-- Allure Maven Plugin -->
+            <plugin>
+                <groupId>io.qameta.allure</groupId>
+                <artifactId>allure-maven</artifactId>
+                <version>2.17.0</version>
+                <configuration>
+                    <resultsDirectory>${project.build.directory}/allure-results</resultsDirectory>
+                    <reportDirectory>${project.build.directory}/allure-report</reportDirectory>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>generate-allure-report</id>
+                        <phase>post-integration-test</phase>
+                        <goals>
+                            <goal>report</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
 
         </plugins>
-
     </build>
-
 
 </project>
