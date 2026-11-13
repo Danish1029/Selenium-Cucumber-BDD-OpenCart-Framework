@@ -49,7 +49,22 @@ WebElement linkLogin;
 // //ul[@class='dropdown-menu dropdown-menu-right']//a[normalize-space()='Login']
 
 
+//Add these @FindBy locators inside HomePage.java
+@FindBy(xpath = "//input[@placeholder='Search']")
+private WebElement txtSearchBox;
 
+@FindBy(xpath = "//div[@id='search']//button[@type='button']")
+private WebElement btnSearch;
+
+//Add these action methods inside HomePage.java
+public void enterSearchProduct(String productName) {
+ txtSearchBox.clear();
+ txtSearchBox.sendKeys(productName);
+}
+
+public void clickSearchButton() {
+ btnSearch.click();
+}
 
 
 public void clickRegister()

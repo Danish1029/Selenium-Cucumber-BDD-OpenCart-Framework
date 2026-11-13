@@ -7,6 +7,8 @@ import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.time.Duration;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Properties;
 import java.util.ResourceBundle;
 
@@ -400,8 +402,22 @@ public class BaseClass {
 
                     ChromeOptions chromeOptions =
                             new ChromeOptions();
+                    
+                    Map<String, Object> prefs = new HashMap<>();
+                    prefs.put("credentials_enable_service", false);
+                    prefs.put("profile.password_manager_enabled", false);
+                    prefs.put("profile.password_manager_leak_detection", false);
+                    chromeOptions.setExperimentalOption("prefs", prefs);
+
+                    chromeOptions.addArguments("--disable-features=PasswordLeakDetection");
+                    chromeOptions.addArguments("--disable-save-password-bubble");
 
                     if (headless) {
+                    	
+                    	chromeOptions.addArguments("--disable-gpu");
+                    	chromeOptions.addArguments("--no-sandbox");
+                    	chromeOptions.addArguments("--disable-dev-shm-usage");
+                    	chromeOptions.addArguments("--remote-allow-origins=*");
 
                         chromeOptions.addArguments(
                                 "--headless=new");
@@ -552,7 +568,7 @@ public class BaseClass {
         driver.manage()
                 .timeouts()
                 .pageLoadTimeout(
-                        Duration.ofSeconds(30));
+                        Duration.ofSeconds(60));
 
 
         // --------------------------------------------------------

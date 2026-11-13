@@ -1,38 +1,49 @@
 package pageObjects;
 
+import java.time.Duration;
+
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
 
 public class MyAccountPage extends BasePage {
 
-	public MyAccountPage(WebDriver driver) {
-		super(driver);
-	}
-	{
-	System.out.println(driver.getCurrentUrl());
-// 	System.out.println(driver.getPageSource());
-	
-}
-	@FindBy(xpath = "//span[normalize-space()='My Account']") // MyAccount Page heading
-	WebElement msgHeading;
-	
-	@FindBy(xpath = "//div[@class='list-group']//a[text()='Logout']")
-	WebElement lnkLogout;
-	
+    private WebDriverWait wait;
 
-	public boolean isMyAccountPageExists()   // MyAccount Page heading display status
-	{
-		try {
-			return (msgHeading.isDisplayed());
-		} catch (Exception e) {
-			return (false);
-		}
-	}
+    public MyAccountPage(WebDriver driver) {
+        super(driver);
+        this.wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+    }
 
-	public void clickLogout() {
-		lnkLogout.click();
+    @FindBy(xpath = "//span[normalize-space()='My Account']") // Top navbar My Account dropdown
+    WebElement msgHeading;
 
-	}
-	
+    @FindBy(xpath = "//ul[contains(@class,'dropdown-menu')]//a[text()='Logout']")
+    WebElement lnkLogout;
+
+    @FindBy(xpath = "//div[@id='content']//h1[text()='Account Logout']")
+    WebElement msgAccountLogout;
+
+    public boolean isMyAccountPageExists() {
+        try {
+            return msgHeading.isDisplayed();
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    public void clickLogout() {
+        wait.until(ExpectedConditions.elementToBeClickable(msgHeading)).click();
+        wait.until(ExpectedConditions.elementToBeClickable(lnkLogout)).click();
+    }
+
+    public boolean isAccountLoggedOut() {
+        try {
+            return wait.until(ExpectedConditions.visibilityOf(msgAccountLogout)).isDisplayed();
+        } catch (Exception e) {
+            return false;
+        }
+    }
 }

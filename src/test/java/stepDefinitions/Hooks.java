@@ -11,86 +11,44 @@ import testBase.BaseClass;
 
 public class Hooks extends BaseClass {
 
-    private static final Logger logger =
-            LogManager.getLogger(Hooks.class);
+    private static final Logger logger = LogManager.getLogger(Hooks.class);
 
     @Before
-    public void beforeScenario(Scenario scenario)
-            throws Exception {
+    public void beforeScenario(Scenario scenario) throws Exception {
 
-        logger.info(
-                "==============================================");
+        logger.info("==============================================");
+        logger.info("Starting Cucumber Scenario: {}", scenario.getName());
+        logger.info("Thread: {}", Thread.currentThread().getName());
 
-        logger.info(
-                "Starting Cucumber Scenario: {}",
-                scenario.getName());
+        String browser = System.getProperty("browser", "chrome");
+        String os = System.getProperty("os", "windows");
 
-        logger.info(
-                "Thread: {}",
-                Thread.currentThread().getName());
+        logger.info("Browser: {}", browser);
+        logger.info("OS: {}", os);
 
-
-        String browser =
-                System.getProperty(
-                        "browser",
-                        "chrome");
-
-        String os =
-                System.getProperty(
-                        "os",
-                        "windows");
-
-
-        logger.info(
-                "Browser: {}",
-                browser);
-
-        logger.info(
-                "OS: {}",
-                os);
-
-
-        setupCucumber(
-                os,
-                browser);
+        setupCucumber(os, browser);
     }
 
-
     @After
-    public void afterScenario(
-            Scenario scenario) {
+    public void afterScenario(Scenario scenario) {
 
         try {
-
             if (scenario.isFailed()) {
+                byte[] screenshot = getScreenshotBytes();
 
-                byte[] screenshot =
-                        getScreenshotBytes();
+                if (screenshot != null && screenshot.length > 0) {
+                    scenario.attach(screenshot, "image/png", "Failure Screenshot");
+                }
 
-                scenario.attach(
-                        screenshot,
-                        "image/png",
-                        "Failure Screenshot");
-
-                logger.error(
-                        "Scenario FAILED: {}",
-                        scenario.getName());
-
+                logger.error("Scenario FAILED: {}", scenario.getName());
             } else {
-
-                logger.info(
-                        "Scenario PASSED: {}",
-                        scenario.getName());
+                logger.info("Scenario PASSED: {}", scenario.getName());
             }
 
         } catch (Exception e) {
-
-            logger.error(
-                    "Error during Cucumber teardown",
-                    e);
+            logger.error("Error during Cucumber teardown", e);
 
         } finally {
-
             tearDownCucumber();
         }
     }
