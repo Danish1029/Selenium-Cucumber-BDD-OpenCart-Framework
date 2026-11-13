@@ -67,6 +67,8 @@ Selenium-Cucumber-BDD-OpenCart-Framework/
 ├── pom.xml                             # Maven dependencies, Surefire & Allure plugin configuration
 ├── testng.xml                          # Cucumber BDD cross-browser suite XML
 └── testng-hybrid.xml                   # Standalone TestNG POM functional suite XML
+
+
 PrerequisitesEnsure the following tools are installed on your system before running the framework:Java Development Kit (JDK) 11 or higher (JAVA_HOME configured)Apache Maven 3.8+ (mvn -version)Browsers: Google Chrome, Microsoft Edge, or Mozilla Firefox (for local execution)Docker Desktop (for containerized Selenium Grid execution)How to Run Tests1. Clone the RepositoryBashgit clone [[(https://github.com/Danish1029/Selenium-Cucumber-BDD-OpenCart-Framework.git)](https://github.com/Danish1029/Selenium-Cucumber-BDD-OpenCart-Framework.git)](https://github.com/Danish1029/Selenium-Cucumber-BDD-OpenCart-Framework.git))
 cd Selenium-Cucumber-BDD-OpenCart-Framework
 2. Local Execution (Windows / macOS / Linux)Run Standalone TestNG POM Suite (testng-hybrid.xml):Bashmvn test -Denv=qa -Dbrowser=chrome -DsuiteXmlFile=testng-hybrid
