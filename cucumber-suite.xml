@@ -4,6 +4,10 @@
 
 <suite name="OpenCart Cucumber BDD Suite">
 
+<listeners>
+        <listener class-name="utilities.ExtentReportManager"/>
+    </listeners>
+    
     <listeners>
 
         <listener class-name="listeners.FrameworkSuiteListener"/>
