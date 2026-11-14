@@ -67,7 +67,11 @@ Selenium-Cucumber-BDD-OpenCart-Framework/
 ├── pom.xml                             # Maven dependencies, Surefire & Allure plugin configuration
 ├── testng.xml                          # Cucumber BDD cross-browser suite XML
 └── testng-hybrid.xml                   # Standalone TestNG POM functional suite XML
-PrerequisitesEnsure the following tools are installed on your system before running the framework:Java Development Kit (JDK) 11 or higher (JAVA_HOME configured)Apache Maven 3.8+ (mvn -version)Browsers: Google Chrome, Microsoft Edge, or Mozilla Firefox (for local execution)Docker Desktop (for containerized Selenium Grid execution)How to Run Tests1. Clone the RepositoryBashgit clone [[(https://github.com/Danish1029/Selenium-Cucumber-BDD-OpenCart-Framework.git)](https://github.com/Danish1029/Selenium-Cucumber-BDD-OpenCart-Framework.git)](https://github.com/Danish1029/Selenium-Cucumber-BDD-OpenCart-Framework.git))
+
+
+PrerequisitesEnsure the following tools are installed on your system before running the framework:Java Development Kit (JDK) 11 or higher (JAVA_HOME configured)Apache Maven 3.8+ (mvn -version)Browsers: Google Chrome, Microsoft Edge, or Mozilla Firefox (for local execution)Docker Desktop (for containerized Selenium Grid execution)How to Run Tests1.
+
+Clone the RepositoryBashgit clone [[(https://github.com/Danish1029/Selenium-Cucumber-BDD-OpenCart-Framework.git)](https://github.com/Danish1029/Selenium-Cucumber-BDD-OpenCart-Framework.git)](https://github.com/Danish1029/Selenium-Cucumber-BDD-OpenCart-Framework.git))
 cd Selenium-Cucumber-BDD-OpenCart-Framework
 2. Local Execution (Windows / macOS / Linux)Run Standalone TestNG POM Suite (testng-hybrid.xml):Bashmvn test -Denv=qa -Dbrowser=chrome -DsuiteXmlFile=testng-hybrid
 Run Cucumber BDD Suite (testng.xml — Cross-Browser):Bashmvn test -Denv=qa -Ddataproviderthreadcount=1
@@ -75,8 +79,11 @@ Run in Headless Mode:Bashmvn test -Denv=qa -Dbrowser=chrome -Dheadless=true -Dsu
 3. Remote Execution on Docker Selenium GridStart the Selenium Hub and Chrome Node:Bashdocker compose up -d selenium-hub chrome
 (Optional: Start all browser nodes using docker compose up -d and monitor live sessions at http://localhost:4444/ui)Execute the Suite Against the Grid:Bashmvn test -Denv=qa -Dexecution_env=remote -Dos=linux -Dbrowser=chrome -DsuiteXmlFile=testng-hybrid -DautoOpenReport=false
 Tear Down Docker Containers:Bashdocker compose down
-Test Coverage SummaryModuleTestNG Test ClassCucumber FeatureScenarios / Validations CoveredAccount RegistrationTC_001_AccountRegistrationTestRegistration.featureDynamic random user registration & account creation confirmationAuthenticationTC_002_LoginTestLogin.featureValid login & negative login matrix (invalid email, invalid password, empty fields)Data-Driven LoginTC_003_LoginDDTLogin.featureExcel-driven positive and negative credential validation via Apache POIProduct SearchTC_004_SearchTestSearch.featureExisting product lookup (iPhone, MacBook) & non-existent product warning validationShopping CartTC_005_AddToCartTestAddToCart.featureProduct selection, quantity update, success alert assertion & cart verificationEnd-to-End JourneyTC_006_EndToEndTestEndToEndFlow.featureFull customer flow: Login → Search → Add to Cart → Verify Cart → LogoutReports, Screenshots & LogsExtent Spark HTML Reports: Generated in reports/AutomationReport_<timestamp>.html (auto-opens in your browser after local runs unless -DautoOpenReport=false is passed).Allure Interactive Report: Generate and serve locally after a test run:Bashmvn allure:serve
-Failure Screenshots: Automatically captured on test/step failure and saved in screenshots/.Execution Logs: Detailed thread-level logs saved in logs/.AuthorDanish Akhtar Ansari — Senior Test Engineer / SDET
+Test Coverage SummaryModuleTestNG Test ClassCucumber FeatureScenarios / Validations CoveredAccount RegistrationTC_001_AccountRegistrationTestRegistration.featureDynamic random user registration & account creation confirmationAuthenticationTC_002_LoginTestLogin.featureValid login & negative login matrix (invalid email, invalid password, empty fields)Data-Driven LoginTC_003_LoginDDTLogin.featureExcel-driven positive and negative credential validation via Apache POIProduct SearchTC_004_SearchTestSearch.featureExisting product lookup (iPhone, MacBook) & non-existent product warning validationShopping CartTC_005_AddToCartTestAddToCart.featureProduct selection, quantity update, success alert assertion & cart verificationEnd-to-End JourneyTC_006_EndToEndTestEndToEndFlow.featureFull customer flow: Login → Search → Add to Cart → Verify Cart → LogoutReports, Screenshots & LogsExtent Spark HTML Reports: Generated in reports/AutomationReport_<timestamp>.html (auto-opens in your browser after local runs unless -DautoOpenReport=false is passed).
+Allure Interactive Report: Generate and serve locally after a test run:Bashmvn allure:serve
+Failure Screenshots: Automatically captured on test/step failure and saved in screenshots/.Execution Logs: Detailed thread-level logs saved in logs/.
+
+AuthorDanish Akhtar Ansari — Senior Test Engineer / SDET
 
 
 
