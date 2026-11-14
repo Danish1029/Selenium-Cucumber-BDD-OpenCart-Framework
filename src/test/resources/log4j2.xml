@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<Configuration status="WARN">
+
+    <Properties>
+
+        <!-- Log Folder -->
+        <Property name="log-path">logs</Property>
+
+        <!-- Timestamp generated when Log4j2 starts -->
+        <Property name="execution-time">
+            $${date:yyyy-MM-dd_HH-mm-ss}
+        </Property>
+
+        <!-- Log Format -->
+        <Property name="log-pattern">
+            %d{yyyy-MM-dd HH:mm:ss.SSS} [%t] %-5level %c{1}:%L - %msg%n
+        </Property>
+
+    </Properties>
+
+    <Appenders>
+
+        <!-- Console Logging -->
+        <Console name="Console" target="SYSTEM_OUT">
+            <PatternLayout pattern="${log-pattern}" />
+        </Console>
+
+        <!-- One log file for this execution -->
+        <File
+                name="File"
+                fileName="${log-path}/automation_${execution-time}.log"
+                append="false">
+
+            <PatternLayout pattern="${log-pattern}" />
+
+        </File>
+
+    </Appenders>
+
+    <Loggers>
+
+        <!-- Reduce Selenium Internal Logs -->
+        <Logger name="org.openqa.selenium"
+                level="WARN"
+                additivity="false">
+            <AppenderRef ref="File"/>
+        </Logger>
+
+        <!-- Reduce Apache HTTP Logs -->
+        <Logger name="org.apache.http"
+                level="WARN"
+                additivity="false">
+            <AppenderRef ref="File"/>
+        </Logger>
+
+        <!-- Reduce WebDriverManager Logs -->
+        <Logger name="io.github.bonigarcia"
+                level="WARN"
+                additivity="false">
+            <AppenderRef ref="File"/>
+        </Logger>
+
+        <!-- Framework Logs -->
+        <Root level="INFO">
+
+            <AppenderRef ref="Console"/>
+            <AppenderRef ref="File"/>
+
+        </Root>
+
+    </Loggers>
+
+</Configuration>

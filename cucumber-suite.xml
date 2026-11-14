@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd">
+
+<suite name="OpenCart Cucumber BDD Suite">
+
+<listeners>
+        <listener class-name="utilities.ExtentReportManager"/>
+    </listeners>
+    
+    <listeners>
+
+        <listener class-name="listeners.FrameworkSuiteListener"/>
+
+    </listeners>
+
+    <parameter name="os" value="windows"/>
+    <parameter name="browser" value="chrome"/>
+
+    <test name="Cucumber BDD Tests">
+
+        <classes>
+
+            <class name="runners.TestRunner"/>
+
+        </classes>
+
+    </test>
+
+</suite>
